@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Indexr.Core/Indexr.Core.csproj" />
+  <Project Path="Indexr.MAUI/Indexr.MAUI.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+</Solution>
