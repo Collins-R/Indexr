@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Indexr.MAUI.ViewModels"
+             xmlns:core="clr-namespace:Indexr.Core.Models;assembly=Indexr.Core"
+             x:Class="Indexr.MAUI.Views.ProjectPage"
+             x:DataType="vm:ProjectViewModel"
+             Title="Project">
+
+    <Grid RowDefinitions="*,Auto" Padding="20">
+
+        <!-- Scrollable Content -->
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="20">
+
+                <!-- Project Details -->
+                <Label Text="Project Details"
+                       Style="{StaticResource SubHeaderLabel}"/>
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" 
+                      ColumnSpacing="10" RowSpacing="10">
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5">
+                        <Label Text="Project Name" Style="{StaticResource BodyLabel}"/>
+                        <Entry Text="{Binding Project.Name}"
+                               Placeholder="Enter project name"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="5">
+                        <Label Text="Version" Style="{StaticResource BodyLabel}"/>
+                        <Entry Text="{Binding Project.Version}"
+                               Placeholder="e.g. 1.0"/>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Root Folder -->
+                <Label Text="Folders" Style="{StaticResource SubHeaderLabel}"/>
+
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <VerticalStackLayout Grid.Column="0" Spacing="5">
+                        <Label Text="Root Folder" Style="{StaticResource BodyLabel}"/>
+                        <Entry Text="{Binding Project.RootFolderPath}"
+                               Placeholder="Select root folder to scan"
+                               IsReadOnly="True"/>
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1"
+                            Text="Browse"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding BrowseRootFolderCommand}"
+                            VerticalOptions="End"/>
+                </Grid>
+
+                <!-- Output Folder -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <VerticalStackLayout Grid.Column="0" Spacing="5">
+                        <Label Text="Output Location" Style="{StaticResource BodyLabel}"/>
+                        <Entry Text="{Binding Project.OutputPath}"
+                               Placeholder="Select output location"
+                               IsReadOnly="True"/>
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1"
+                            Text="Browse"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding BrowseOutputFolderCommand}"
+                            VerticalOptions="End"/>
+                </Grid>
+
+                <!-- Exclusion Rules -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                           Text="Exclusion Rules"
+                           Style="{StaticResource SubHeaderLabel}"/>
+                    <Button Grid.Column="1"
+                            Text="Add Rule"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding AddExclusionRuleCommand}"/>
+                </Grid>
+
+                <Label Text="No exclusion rules added"
+                       Style="{StaticResource SubtleLabel}"/>
+
+                <CollectionView ItemsSource="{Binding Project.ExclusionRules}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="core:ExclusionRule">
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" 
+                                  ColumnSpacing="10" Padding="0,5">
+                                <Picker Grid.Column="0"
+                                        ItemsSource="{Binding Source={RelativeSource AncestorType={x:Type vm:ProjectViewModel}}, Path=FilterRuleTypes}"
+                                        SelectedItem="{Binding Type}"
+                                        WidthRequest="100"/>
+                                <Entry Grid.Column="1"
+                                       Text="{Binding Pattern}"
+                                       Placeholder="Folder or file name"/>
+                                <Picker Grid.Column="2"
+                                        ItemsSource="{Binding Source={RelativeSource AncestorType={x:Type vm:ProjectViewModel}}, Path=FilterPatternTypes}"
+                                        SelectedItem="{Binding PatternType}"
+                                        WidthRequest="110"/>
+                                <Button Grid.Column="3"
+                                        Text="Remove"
+                                        Style="{StaticResource DangerButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProjectViewModel}}, 
+                                            Path=RemoveExclusionRuleCommand}"
+                                        CommandParameter="{Binding}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Inclusion Rules -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Grid.Column="0"
+                           Text="Inclusion Rules"
+                           Style="{StaticResource SubHeaderLabel}"/>
+                    <Button Grid.Column="1"
+                            Text="Add Rule"
+                            Style="{StaticResource SecondaryButton}"
+                            Command="{Binding AddInclusionRuleCommand}"/>
+                </Grid>
+
+                <Label Text="No inclusion rules added"
+                       Style="{StaticResource SubtleLabel}"/>
+
+                <CollectionView ItemsSource="{Binding Project.InclusionRules}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="core:InclusionRule">
+                            <Grid ColumnDefinitions="*,*,Auto" 
+                                  ColumnSpacing="10" Padding="0,5">
+                                <Entry Grid.Column="0"
+                                       Text="{Binding FolderPath}"
+                                       Placeholder="Folder path"/>
+                                <Entry Grid.Column="1"
+                                       Text="{Binding DisplayName}"
+                                       Placeholder="Display name"/>
+                                <Button Grid.Column="2"
+                                        Text="Remove"
+                                        Style="{StaticResource DangerButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProjectViewModel}}, 
+                                            Path=RemoveInclusionRuleCommand}"
+                                        CommandParameter="{Binding}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Status Message -->
+                <Label Text="{Binding StatusMessage}"
+                       Style="{StaticResource BodyLabel}"
+                       TextColor="Green"
+                       IsVisible="{Binding HasStatusMessage}"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom Action Bar -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" 
+              ColumnSpacing="10" Padding="0,10,0,0">
+            <ActivityIndicator Grid.Column="0"
+                               IsRunning="{Binding IsGenerating}"
+                               IsVisible="{Binding IsGenerating}"
+                               HorizontalOptions="Start"/>
+            <Button Grid.Column="1"
+                    Text="Save Project"
+                    Style="{StaticResource SecondaryButton}"
+                    Command="{Binding SaveProjectCommand}"/>
+            <Button Grid.Column="2"
+                    Text="Generate"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding GenerateCommand}"/>
+        </Grid>
+
+    </Grid>
+</ContentPage>

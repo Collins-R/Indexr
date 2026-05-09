@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Indexr.MAUI.ViewModels"
+             xmlns:core="clr-namespace:Indexr.Core.Models;assembly=Indexr.Core"
+             x:Class="Indexr.MAUI.Views.HomePage"
+             x:DataType="vm:HomeViewModel"
+             Title="Indexr">
+
+    <Grid RowDefinitions="Auto,*" Padding="20">
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0" Spacing="10" Margin="0,20,0,30">
+            <Label Text="Indexr"
+                   Style="{StaticResource HeaderLabel}"/>
+            <Label Text="Generate formatted document indexes from your project folders"
+                   Style="{StaticResource SubtleLabel}"/>
+            <Button Text="New Project"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding NewProjectCommand}"
+                    HorizontalOptions="Start"
+                    Margin="0,10,0,0"/>
+        </VerticalStackLayout>
+
+        <!-- Recent Projects -->
+        <VerticalStackLayout Grid.Row="1" Spacing="10">
+            <Label Text="Recent Projects"
+                   Style="{StaticResource SubHeaderLabel}"/>
+
+            <Label Text="No recent projects yet"
+                   Style="{StaticResource SubtleLabel}"
+                   IsVisible="False"/>
+
+            <CollectionView ItemsSource="{Binding RecentProjects}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="core:RecentProject">
+                        <Grid Padding="10,5" ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="{Binding Name}"
+                                       Style="{StaticResource BodyLabel}"
+                                       FontAttributes="Bold"/>
+                                <Label Text="{Binding LastOpened, 
+                                           StringFormat='{0:yyyy/MM/dd}'}"
+                                       Style="{StaticResource SubtleLabel}"/>
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1"
+                                    Text="Open"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, 
+                                        Path=OpenRecentProjectCommand}"
+                                    CommandParameter="{Binding}"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>
