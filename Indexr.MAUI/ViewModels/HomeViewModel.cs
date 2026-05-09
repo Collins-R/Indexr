@@ -35,7 +35,7 @@ namespace Indexr.MAUI.ViewModels
         {
             await Shell.Current.GoToAsync("//ProjectPage", new Dictionary<string, object>
             {
-                { "Project", project }
+                { "ProjectFilePath", project.FilePath }
             });
         }
     }

@@ -5,7 +5,7 @@
              xmlns:core="clr-namespace:Indexr.Core.Models;assembly=Indexr.Core"
              x:Class="Indexr.MAUI.Views.ProjectPage"
              x:DataType="vm:ProjectViewModel"
-             Title="Project">
+             Title="">
 
     <Grid RowDefinitions="*,Auto" Padding="20">
 
@@ -76,7 +76,8 @@
                 </Grid>
 
                 <Label Text="No exclusion rules added"
-                       Style="{StaticResource SubtleLabel}"/>
+                       Style="{StaticResource SubtleLabel}"
+                       IsVisible="{Binding HasNoExclusionRules}"/>
 
                 <CollectionView ItemsSource="{Binding Project.ExclusionRules}">
                     <CollectionView.ItemTemplate>
@@ -84,16 +85,18 @@
                             <Grid ColumnDefinitions="Auto,*,Auto,Auto" 
                                   ColumnSpacing="10" Padding="0,5">
                                 <Picker Grid.Column="0"
-                                        ItemsSource="{Binding Source={RelativeSource AncestorType={x:Type vm:ProjectViewModel}}, Path=FilterRuleTypes}"
-                                        SelectedItem="{Binding Type}"
-                                        WidthRequest="100"/>
+                                    ItemsSource="{Binding Source={RelativeSource AncestorType={x:Type vm:ProjectViewModel}}, 
+                                        Path=FilterRuleTypes}"
+                                    SelectedItem="{Binding TypeString}"
+                                    WidthRequest="100"/>
                                 <Entry Grid.Column="1"
                                        Text="{Binding Pattern}"
                                        Placeholder="Folder or file name"/>
                                 <Picker Grid.Column="2"
-                                        ItemsSource="{Binding Source={RelativeSource AncestorType={x:Type vm:ProjectViewModel}}, Path=FilterPatternTypes}"
-                                        SelectedItem="{Binding PatternType}"
-                                        WidthRequest="110"/>
+                                    ItemsSource="{Binding Source={RelativeSource AncestorType={x:Type vm:ProjectViewModel}}, 
+                                        Path=FilterPatternTypes}"
+                                    SelectedItem="{Binding PatternTypeString}"
+                                    WidthRequest="110"/>
                                 <Button Grid.Column="3"
                                         Text="Remove"
                                         Style="{StaticResource DangerButton}"
@@ -117,7 +120,8 @@
                 </Grid>
 
                 <Label Text="No inclusion rules added"
-                       Style="{StaticResource SubtleLabel}"/>
+                       Style="{StaticResource SubtleLabel}"
+                       IsVisible="{Binding HasNoInclusionRules}"/>
 
                 <CollectionView ItemsSource="{Binding Project.InclusionRules}">
                     <CollectionView.ItemTemplate>

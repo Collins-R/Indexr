@@ -5,7 +5,7 @@
              xmlns:core="clr-namespace:Indexr.Core.Models;assembly=Indexr.Core"
              x:Class="Indexr.MAUI.Views.HomePage"
              x:DataType="vm:HomeViewModel"
-             Title="Indexr">
+             Title="">
 
     <Grid RowDefinitions="Auto,*" Padding="20">
 

@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Indexr.Core.Enums;
+﻿using Indexr.Core.Enums;
 using Indexr.Core.Models;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Indexr.Core.Services
@@ -17,8 +18,8 @@ namespace Indexr.Core.Services
         }
 
         public (List<IndexGroup> Groups, List<IndexInclusionGroup> InclusionGroups)
-            Scan(string rootPath, List<ExclusionRule> exclusionRules,
-                 List<InclusionRule> inclusionRules)
+            Scan(string rootPath, ObservableCollection<ExclusionRule> exclusionRules,
+                ObservableCollection<InclusionRule> inclusionRules)
         {
             var groups = new List<IndexGroup>();
             var inclusionGroups = new List<IndexInclusionGroup>();
@@ -102,13 +103,13 @@ namespace Indexr.Core.Services
         }
 
         private InclusionRule? GetMatchingInclusionRule(string dirPath,
-            List<InclusionRule> inclusionRules)
+            ObservableCollection<InclusionRule> inclusionRules)
         {
             return inclusionRules.FirstOrDefault(r =>
                 dirPath.Equals(r.FolderPath, StringComparison.OrdinalIgnoreCase));
         }
 
-        private bool IsExcluded(string dirPath, List<ExclusionRule> exclusionRules)
+        private bool IsExcluded(string dirPath, ObservableCollection<ExclusionRule> exclusionRules)
         {
             var dirName = new DirectoryInfo(dirPath).Name;
 

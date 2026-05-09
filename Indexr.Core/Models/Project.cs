@@ -1,15 +1,30 @@
-﻿
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Indexr.Core.Enums;
+using System.Collections.ObjectModel;
+
 namespace Indexr.Core.Models
 {
-    public class Project
+    public partial class Project : ObservableObject
     {
-        public string Name { get; set; }
-        public string Version { get; set; }
-        public string RootFolderPath { get; set; }
-        public string OutputPath { get; set; }
-        public string ProjectFilePath { get; set; }
-        public List<ExclusionRule> ExclusionRules { get; set; } = new();
-        public List<InclusionRule> InclusionRules { get; set; } = new();
-        public DateTime LastGenerated { get; set; }
+        [ObservableProperty]
+        private string _name = string.Empty;
+
+        [ObservableProperty]
+        private string _version = string.Empty;
+
+        [ObservableProperty]
+        private string _rootFolderPath = string.Empty;
+
+        [ObservableProperty]
+        private string _outputPath = string.Empty;
+
+        [ObservableProperty]
+        private string _projectFilePath = string.Empty;
+
+        [ObservableProperty]
+        private DateTime _lastGenerated;
+
+        public ObservableCollection<ExclusionRule> ExclusionRules { get; set; } = new();
+        public ObservableCollection<InclusionRule> InclusionRules { get; set; } = new();
     }
 }

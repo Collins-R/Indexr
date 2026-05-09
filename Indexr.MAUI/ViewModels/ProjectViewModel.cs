@@ -7,7 +7,7 @@ using Indexr.Core.Services;
 
 namespace Indexr.MAUI.ViewModels
 {
-    [QueryProperty(nameof(Project), "Project")]
+    [QueryProperty(nameof(ProjectFilePath), "ProjectFilePath")]
     public partial class ProjectViewModel : ObservableObject
     {
         private readonly FolderScannerService _folderScannerService;
@@ -28,11 +28,27 @@ namespace Indexr.MAUI.ViewModels
         [ObservableProperty]
         private bool _hasStatusMessage;
 
+        private string _projectFilePath = string.Empty;
+        public string ProjectFilePath
+        {
+            get => _projectFilePath;
+            set
+            {
+                _projectFilePath = value;
+                if (!string.IsNullOrWhiteSpace(value))
+                    LoadProject(value);
+            }
+        }
+
         public List<string> FilterRuleTypes { get; } =
             Enum.GetNames(typeof(FilterRuleType)).ToList();
 
         public List<string> FilterPatternTypes { get; } =
             Enum.GetNames(typeof(FilterPatternType)).ToList();
+
+        public bool HasNoExclusionRules => Project.ExclusionRules.Count == 0;
+        public bool HasNoInclusionRules => Project.InclusionRules.Count == 0;
+
 
         public ProjectViewModel(
             FolderScannerService folderScannerService,
@@ -46,12 +62,6 @@ namespace Indexr.MAUI.ViewModels
             _projectFileService = projectFileService;
             _recentProjectsService = recentProjectsService;
             _versionIncrementService = versionIncrementService;
-        }
-
-        partial void OnProjectChanged(Project value)
-        {
-            if (value?.Version != null)
-                Project.Version = _versionIncrementService.Increment(value.Version);
         }
 
         [RelayCommand]
@@ -126,7 +136,19 @@ namespace Indexr.MAUI.ViewModels
                 if (!string.IsNullOrWhiteSpace(Project.ProjectFilePath))
                     _projectFileService.Save(Project, Project.ProjectFilePath);
 
-                await ShowStatus($"Document generated successfully");
+                var open = await Shell.Current.DisplayAlert(
+                    "Generation Complete",
+                    $"Document index generated successfully.\n\nWould you like to open it?",
+                    "Open", "Close");
+
+                if (open)
+                {
+                    await Launcher.Default.OpenAsync(
+                        new OpenFileRequest
+                        {
+                            File = new ReadOnlyFile(outputPath)
+                        });
+                }
             }
             catch (Exception ex)
             {
@@ -144,15 +166,17 @@ namespace Indexr.MAUI.ViewModels
             Project.ExclusionRules.Add(new ExclusionRule
             {
                 Pattern = string.Empty,
-                Type = Indexr.Core.Enums.FilterRuleType.Folder,
-                PatternType = Indexr.Core.Enums.FilterPatternType.PlainText
+                Type = FilterRuleType.Folder,
+                PatternType = FilterPatternType.PlainText
             });
+            OnPropertyChanged(nameof(HasNoExclusionRules));
         }
 
         [RelayCommand]
         private void RemoveExclusionRule(ExclusionRule rule)
         {
             Project.ExclusionRules.Remove(rule);
+            OnPropertyChanged(nameof(HasNoExclusionRules));
         }
 
         [RelayCommand]
@@ -163,12 +187,14 @@ namespace Indexr.MAUI.ViewModels
                 FolderPath = string.Empty,
                 DisplayName = string.Empty
             });
+            OnPropertyChanged(nameof(HasNoInclusionRules));
         }
 
         [RelayCommand]
         private void RemoveInclusionRule(InclusionRule rule)
         {
             Project.InclusionRules.Remove(rule);
+            OnPropertyChanged(nameof(HasNoInclusionRules));
         }
 
         private async Task ShowStatus(string message)
@@ -177,6 +203,16 @@ namespace Indexr.MAUI.ViewModels
             HasStatusMessage = true;
             await Task.Delay(3000);
             HasStatusMessage = false;
+        }
+
+        private void LoadProject(string filePath)
+        {
+            var project = _projectFileService.Load(filePath);
+            if (project != null)
+            {
+                project.Version = _versionIncrementService.Increment(project.Version);
+                Project = project;
+            }
         }
     }
 }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using Indexr.Core.Models;
 
 namespace Indexr.Core.Services
@@ -10,7 +8,8 @@ namespace Indexr.Core.Services
     {
         private readonly JsonSerializerOptions _options = new()
         {
-            WriteIndented = true
+            WriteIndented = true,
+            Converters = { new JsonStringEnumConverter() }
         };
 
         public void Save(Project project, string filePath)
@@ -26,7 +25,17 @@ namespace Indexr.Core.Services
                 return null;
 
             var json = File.ReadAllText(filePath);
-            return JsonSerializer.Deserialize<Project>(json);
+            var migrated = MigrateEnums(json);
+            return JsonSerializer.Deserialize<Project>(migrated, _options);
+        }
+
+        private string MigrateEnums(string json)
+        {
+            json = json.Replace("\"Type\": 0", "\"Type\": \"Folder\"");
+            json = json.Replace("\"Type\": 1", "\"Type\": \"File\"");
+            json = json.Replace("\"PatternType\": 0", "\"PatternType\": \"PlainText\"");
+            json = json.Replace("\"PatternType\": 1", "\"PatternType\": \"Regex\"");
+            return json;
         }
     }
 }

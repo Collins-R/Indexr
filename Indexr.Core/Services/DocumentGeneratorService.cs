@@ -106,9 +106,18 @@ namespace Indexr.Core.Services
                             var isFirst = true;
                             foreach (var entry in group.Entries)
                             {
-                                // Section column — only show on first entry
-                                table.Cell().BorderBottom(1).Padding(5)
-                                    .Text(isFirst ? group.FolderName : "");
+                                // Section column — only show on first entry, with hyperlink
+                                if (isFirst)
+                                {
+                                    table.Cell().BorderBottom(1).Padding(5)
+                                        .Hyperlink(group.UncFolderPath ?? group.FolderPath)
+                                        .Text(group.FolderName)
+                                        .FontColor("#0000FF").Underline();
+                                }
+                                else
+                                {
+                                    table.Cell().BorderBottom(1).Padding(5).Text("");
+                                }
 
                                 // Sub-section
                                 table.Cell().BorderBottom(1).Padding(5)
